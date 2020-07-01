@@ -1,5 +1,5 @@
 export default function toDo(title, description = "", dueDate, priority = 1, notes = "", checkList = []){
-    let _title, _description, _dueDate, _priority, _notes, _checkList;
+    let _title, _description, _dueDate, _priority, _notes, _checkList, _checkListDone;
 
     const createToDo = function(){
         _title = title;
@@ -8,6 +8,7 @@ export default function toDo(title, description = "", dueDate, priority = 1, not
         _priority = priority;
         _notes = notes;
         _checkList = checkList;
+        _checkListDone = _checkList.map(v => false);
     }();
 
     const getTitle = function(){
@@ -58,10 +59,24 @@ export default function toDo(title, description = "", dueDate, priority = 1, not
 
     const addItemToCheckList = function(newItem){
         _checkList.push(newItem);
+        _checkListDone.push(false);
     };
 
     const removeItemFromCheckList = function(index){
-        _checkList = _checkList.splice(index, 1);
+        _checkList.splice(index, 1);
+        _checkListDone.splice(index, 1);
+    };
+
+    const changeItemFromCheckList = function(index, newValue){
+        _checkList[index] = newValue;
+    };
+
+    const getCheckListItemDoneStatus = function(index){
+        return _checkListDone[index];
+    };
+
+    const changeCheckListItemDoneStatus = function(index){
+        _checkListDone[index] = !_checkListDone[index];
     };
 
     return {
@@ -78,5 +93,8 @@ export default function toDo(title, description = "", dueDate, priority = 1, not
         setNotes,
         addItemToCheckList,
         removeItemFromCheckList,
+        changeItemFromCheckList,
+        getCheckListItemDoneStatus,
+        changeCheckListItemDoneStatus,
     };
 };

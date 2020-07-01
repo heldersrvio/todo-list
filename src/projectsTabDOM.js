@@ -14,14 +14,15 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
             clearMainScreen();
             exhibitProject(project);
 
-            for (j = 0; j < projectList.length; j++){
-                if (j != projectList.indexOf(project) && projectList[j].classList.includes('highlighted')){
-                    projectList[j].classList = projectList[j].classList.filter( v => v != 'highlighted');
+            const projectElements = Array.from(doc.querySelectorAll('.project-pv'));
+            for (let j = 0; j < projectElements.length; j++){
+                if (j != projectElements.indexOf(projectElement)){
+                    projectElements[j].classList.remove('highlighted');
                     break;
                 }
             }
 
-            project.classList.add('highlighted');
+            projectElement.classList.add('highlighted');
         });
 
         return projectElement;
