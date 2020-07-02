@@ -8,22 +8,53 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
         projectElement.classList.add('project-pv');
         const projectElementTitle = doc.createElement('h3');
         projectElementTitle.textContent = project.getTitle();
-        projectElement.appendChild(projectElementTitle);
 
-        projectElement.addEventListener('click', e => {
-            clearMainScreen();
-            exhibitProject(project);
+        projectElementTitle.addEventListener('click', e => {
+            const tD = doc.querySelector('.todo-details');
+            if (!tD){
 
-            const projectElements = Array.from(doc.querySelectorAll('.project-pv'));
-            for (let j = 0; j < projectElements.length; j++){
-                if (j != projectElements.indexOf(projectElement)){
-                    projectElements[j].classList.remove('highlighted');
-                    break;
+                clearMainScreen();
+                exhibitProject(project);
+
+                const projectElements = Array.from(doc.querySelectorAll('.project-pv'));
+                for (let j = 0; j < projectElements.length; j++){
+                    if (j != projectElements.indexOf(projectElement)){
+                        projectElements[j].classList.remove('highlighted');
+                        break;
+                    }
                 }
-            }
 
-            projectElement.classList.add('highlighted');
+                projectElement.classList.add('highlighted');
+            }else{
+                tD.classList.add('alert');
+                setTimeout(function(){
+                    tD.classList.remove('alert');
+                }, 1000);
+            }
         });
+        projectElement.appendChild(projectElementTitle);
+        
+        if (project.getTitle() != "Default"){
+            const deleteProjectButton = doc.createElement('button');
+            deleteProjectButton.classList.add('delete-project-button');
+            deleteProjectButton.textContent = '-';
+            deleteProjectButton.addEventListener('click', e => {
+                const tD = doc.querySelector('.todo-details');
+                if (!tD){
+                    projectElement.parentNode.removeChild(projectElement);
+                    if (projectElement.classList.contains('highlighted')){
+                        clearMainScreen();
+                        exhibitProject(projectList[0]);
+                    }
+                }else{
+                    tD.classList.add('alert');
+                    setTimeout(function(){
+                        tD.classList.remove('alert');
+                    }, 1000);
+                }
+            });
+            projectElement.appendChild(deleteProjectButton);
+        }
 
         return projectElement;
     }
@@ -49,23 +80,31 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
     newProjectButton.textContent = '+';
     newProjectButton.id = 'new-project-button';
     newProjectButton.addEventListener('click', e => {
-        const titleInput = doc.createElement('input');
-        titleInput.type = 'text';
-        titleInput.id = 'project-title-input';
-        titleInput.addEventListener('keydown', e => {
-            if (e.key == "Enter"){
-                const projectElementsDiv = doc.querySelector('#project-elements');
-                const addProjectButton = doc.querySelector('#new-project-button');
-                const projectTitleInput = doc.querySelector('#project-title-input');
+        const tD = doc.querySelector('.todo-details');
+        if (!tD){
+            const titleInput = doc.createElement('input');
+            titleInput.type = 'text';
+            titleInput.id = 'project-title-input';
+            titleInput.addEventListener('keydown', e => {
+                if (e.key == "Enter"){
+                    const projectElementsDiv = doc.querySelector('#project-elements');
+                    const addProjectButton = doc.querySelector('#new-project-button');
+                    const projectTitleInput = doc.querySelector('#project-title-input');
 
-                const newProject = project(titleInput.value, []);
-                projectList.push(newProject);
+                    const newProject = project(titleInput.value, []);
+                    projectList.push(newProject);
 
-                projectElementsDiv.insertBefore(createNewProject(newProject), addProjectButton);
-                projectElementsDiv.removeChild(projectTitleInput);
-            }
-        });
-        projectElements.appendChild(titleInput);
+                    projectElementsDiv.insertBefore(createNewProject(newProject), addProjectButton);
+                    projectElementsDiv.removeChild(projectTitleInput);
+                }
+            });
+            projectElements.appendChild(titleInput);
+        }else{
+            tD.classList.add('alert');
+            setTimeout(function(){
+                tD.classList.remove('alert');
+            }, 1000);
+        }
     });
     projectElements.appendChild(newProjectButton);
 

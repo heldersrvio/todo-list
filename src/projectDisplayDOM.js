@@ -1,5 +1,5 @@
 import toDo from "./todo";
-import { format } from "date-fns";
+import { format, isValid } from "date-fns";
 
 export default function projectDisplay(doc, container){
 
@@ -48,6 +48,10 @@ export default function projectDisplay(doc, container){
 
     function save(todo){
         todo.setTitle(doc.querySelector('.todo-details-title-container input').value);
+        const newDueDate = new Date(doc.querySelector('.year-input').value, doc.querySelector('.month-input').value - 1, doc.querySelector('.day-input').value);
+        if (isValid(newDueDate)){
+            todo.setDueDate(newDueDate);
+        }
         todo.setDescription(doc.querySelector('.todo-details-description-container textarea').value);
         todo.setNotes(doc.querySelector('.todo-details-notes-container textarea').value);
         const currentChecklist = todo.getCheckList();
@@ -60,79 +64,127 @@ export default function projectDisplay(doc, container){
     }
 
     function createToDoDetailsDiv(project, index){
-        const todo = project.getToDoList()[index];
-        const mainScreen = doc.querySelector('#project-display');
+        const tD = doc.querySelector('.todo-details');
 
-        const toDoDetailsContainer = doc.createElement('div');
-        toDoDetailsContainer.classList.add('todo-details');
+        if (!tD){
+            const todo = project.getToDoList()[index];
+            const mainScreen = doc.querySelector('#project-display');
 
-        const titleDiv = doc.createElement('div');
-        titleDiv.classList.add('todo-details-title-container');
-        const title = doc.createElement('input');
-        title.type = 'text';
-        title.value = todo.getTitle();
-        titleDiv.appendChild(title);
-        toDoDetailsContainer.appendChild(titleDiv);
+            const toDoDetailsContainer = doc.createElement('div');
+            toDoDetailsContainer.classList.add('todo-details');
 
-        const descriptionDiv = doc.createElement('div');
-        descriptionDiv.classList.add('todo-details-description-container');
-        const description = doc.createElement('textarea');
-        description.classList.add('description');
-        description.cols = '15';
-        description.rows = '5';
-        description.textContent = todo.getDescription();
-        descriptionDiv.appendChild(description);
-        toDoDetailsContainer.appendChild(descriptionDiv);
+            const titleAndDateDiv = doc.createElement('div');
 
-        const notesDiv = doc.createElement('div');
-        notesDiv.classList.add('todo-details-notes-container');
-        const notes = doc.createElement('textarea');
-        notes.classList.add('notes');
-        notes.cols = '15';
-        notes.rows = '10';
-        notes.textContent = todo.getNotes();
-        notesDiv.appendChild(notes);
-        toDoDetailsContainer.appendChild(notesDiv);
+            titleAndDateDiv.classList.add('todo-details-title-and-date');
+            const titleDiv = doc.createElement('div');
+            titleDiv.classList.add('todo-details-title-container');
+            const title = doc.createElement('input');
+            title.type = 'text';
+            title.value = todo.getTitle();
+            titleDiv.appendChild(title);
+            titleAndDateDiv.appendChild(titleDiv);
+            
+            const dateDiv = doc.createElement('div');
+            dateDiv.classList.add('todo-details-date-container');
+            const dateYear = doc.createElement('input');
+            dateYear.classList.add('year-input');
+            dateYear.type = 'number';
+            dateYear.value = todo.getDueDate().getFullYear();
+            dateYear.min = (new Date()).getFullYear();
+            dateYear.max = dateYear.min + 10;
+            dateDiv.appendChild(dateYear);
+            let spcb = doc.createElement('p');
+            spcb.textContent = '\\';
+            dateDiv.appendChild(spcb);
+            const dateMonth = doc.createElement('input');
+            dateMonth.classList.add('month-input');
+            dateMonth.type = 'number';
+            dateMonth.value = todo.getDueDate().getMonth() + 1;
+            dateMonth.min = 1;
+            dateMonth.max = 12;
+            dateDiv.appendChild(dateMonth);
+            spcb = doc.createElement('p');
+            spcb.textContent = '\\';
+            dateDiv.appendChild(spcb);
+            const dateDay = doc.createElement('input');
+            dateDay.classList.add('day-input');
+            dateDay.type = 'number';
+            dateDay.value = todo.getDueDate().getDate();
+            dateDay.min = 1;
+            dateDay.max = 31;
+            dateDiv.appendChild(dateDay);
+            spcb = doc.createElement('p');
+            spcb.textContent = '\\';
+            dateDiv.appendChild(spcb);
+            titleAndDateDiv.appendChild(dateDiv);
 
-        const checklistDiv = doc.createElement('div');
-        checklistDiv.classList.add('todo-details-checklist-container');
-        for (let i = 0; i < todo.getCheckList().length; i++){
-            createChecklistItem(todo, todo.getCheckList()[i], i, checklistDiv);
+            toDoDetailsContainer.appendChild(titleAndDateDiv);
+
+            const descriptionDiv = doc.createElement('div');
+            descriptionDiv.classList.add('todo-details-description-container');
+            const description = doc.createElement('textarea');
+            description.classList.add('description');
+            description.cols = '15';
+            description.rows = '5';
+            description.textContent = todo.getDescription();
+            descriptionDiv.appendChild(description);
+            toDoDetailsContainer.appendChild(descriptionDiv);
+
+            const notesDiv = doc.createElement('div');
+            notesDiv.classList.add('todo-details-notes-container');
+            const notes = doc.createElement('textarea');
+            notes.classList.add('notes');
+            notes.cols = '15';
+            notes.rows = '10';
+            notes.textContent = todo.getNotes();
+            notesDiv.appendChild(notes);
+            toDoDetailsContainer.appendChild(notesDiv);
+
+            const checklistDiv = doc.createElement('div');
+            checklistDiv.classList.add('todo-details-checklist-container');
+            for (let i = 0; i < todo.getCheckList().length; i++){
+                createChecklistItem(todo, todo.getCheckList()[i], i, checklistDiv);
+            }
+            toDoDetailsContainer.appendChild(checklistDiv);
+            const newCheckItemButton = doc.createElement('button');
+            newCheckItemButton.id = 'new-checkitem-button';
+            newCheckItemButton.textContent = '+';
+            newCheckItemButton.addEventListener('click', e => {
+                const parentDiv = doc.querySelector('.todo-details-checklist-container');
+                todo.addItemToCheckList("");
+                createChecklistItem(todo, "", todo.getCheckList().length - 1, parentDiv);
+            });
+            toDoDetailsContainer.appendChild(newCheckItemButton);
+
+            const bottomButtons = doc.createElement('div');
+            bottomButtons.classList.add('todo-details-bottom-buttons');
+            const saveButton = doc.createElement('button');
+            saveButton.id = 'save-button';
+            saveButton.textContent = 'Save';
+            saveButton.addEventListener('click', e => {
+                save(todo);
+                clearMainScreen();
+                createProjectDisplay(project);
+            });
+            bottomButtons.appendChild(saveButton);
+            const deleteButton = doc.createElement('button');
+            deleteButton.id = 'delete-button';
+            deleteButton.textContent = 'Delete';
+            deleteButton.addEventListener('click', e => {
+                project.removeToDo(index);
+                clearMainScreen();
+                createProjectDisplay(project);
+            });
+            bottomButtons.appendChild(deleteButton);
+            toDoDetailsContainer.appendChild(bottomButtons);
+
+            mainScreen.appendChild(toDoDetailsContainer);
+        }else{
+            tD.classList.add('alert');
+            setTimeout(function(){
+                tD.classList.remove('alert');
+            }, 1000);
         }
-        toDoDetailsContainer.appendChild(checklistDiv);
-        const newCheckItemButton = doc.createElement('button');
-        newCheckItemButton.id = 'new-checkitem-button';
-        newCheckItemButton.textContent = '+';
-        newCheckItemButton.addEventListener('click', e => {
-            const parentDiv = doc.querySelector('.todo-details-checklist-container');
-            todo.addItemToCheckList("");
-            createChecklistItem(todo, "", todo.getCheckList().length - 1, parentDiv);
-        });
-        toDoDetailsContainer.appendChild(newCheckItemButton);
-
-        const bottomButtons = doc.createElement('div');
-        bottomButtons.classList.add('todo-details-bottom-buttons');
-        const saveButton = doc.createElement('button');
-        saveButton.id = 'save-button';
-        saveButton.textContent = 'Save';
-        saveButton.addEventListener('click', e => {
-            save(todo);
-            clearMainScreen();
-            createProjectDisplay(project);
-        });
-        bottomButtons.appendChild(saveButton);
-        const deleteButton = doc.createElement('button');
-        deleteButton.id = 'delete-button';
-        deleteButton.textContent = 'Delete';
-        deleteButton.addEventListener('click', e => {
-            project.removeToDo(index);
-            clearMainScreen();
-            createProjectDisplay(project);
-        });
-        bottomButtons.appendChild(deleteButton);
-        toDoDetailsContainer.appendChild(bottomButtons);
-
-        mainScreen.appendChild(toDoDetailsContainer);
     }
 
     const clearMainScreen = function(){
@@ -180,6 +232,12 @@ export default function projectDisplay(doc, container){
                 createToDoDetailsDiv(project, i);
             });
             checkboxContainer.appendChild(label);
+
+            const toDoDate = doc.createElement('p');
+            toDoDate.classList.add('toDo-date-pv');
+            toDoDate.textContent = format(todos[i].getDueDate(), 'yyyy/MM/dd');
+            checkboxContainer.appendChild(toDoDate);
+
             mainScreen.appendChild(checkboxContainer);
         }
 
@@ -187,10 +245,18 @@ export default function projectDisplay(doc, container){
         newToDoButton.id = 'new-todo-button';
         newToDoButton.textContent = '+';
         newToDoButton.addEventListener('click', e => {
-            const date = format((new Date()).getDate() + 1, 'yyyy/mm/dd');
-            const newToDo = toDo("", "", date, 1, "", []);
-            project.addToDo(newToDo);
-            createToDoDetailsDiv(project, project.getToDoList().length - 1);
+            const tD = doc.querySelector('.todo-details');
+            if (!tD){
+                const date = (new Date());
+                const newToDo = toDo("", "", date, 1, "", []);
+                project.addToDo(newToDo);
+                createToDoDetailsDiv(project, project.getToDoList().length - 1);
+            }else{
+                tD.classList.add('alert');
+                setTimeout(function(){
+                    tD.classList.remove('alert');
+                }, 1000);
+            }
         });
         mainScreen.appendChild(newToDoButton);
 
