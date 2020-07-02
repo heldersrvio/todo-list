@@ -1,5 +1,5 @@
 import toDo from "./todo";
-import { format, isValid, isEqual, isSameDay } from "date-fns";
+import { format, isValid, isAfter, isSameDay } from "date-fns";
 
 export default function projectDisplay(doc, container, projectListObject){
 
@@ -48,9 +48,10 @@ export default function projectDisplay(doc, container, projectListObject){
     function save(todo){
         todo.setTitle(doc.querySelector('.todo-details-title-container input').value);
         const newDueDate = new Date(doc.querySelector('.year-input').value, doc.querySelector('.month-input').value - 1, doc.querySelector('.day-input').value);
-        if (isValid(newDueDate)){
+        if (isValid(newDueDate) && (isAfter(newDueDate, new Date()) || isSameDay(newDueDate, new Date()))){
             todo.setDueDate(newDueDate);
         }
+        todo.setPriority(doc.querySelector('.priority').value);
         todo.setDescription(doc.querySelector('.todo-details-description-container textarea').value);
         todo.setNotes(doc.querySelector('.todo-details-notes-container textarea').value);
         const currentChecklist = todo.getCheckList();
@@ -118,12 +119,30 @@ export default function projectDisplay(doc, container, projectListObject){
 
             toDoDetailsContainer.appendChild(titleAndDateDiv);
 
+            const priorityDiv = doc.createElement('div');
+            priorityDiv.classList.add('todo-details-priority-container');
+            const priorityLabel = doc.createElement('label');
+            priorityLabel.classList.add('priority-label');
+            priorityLabel.for = `priority-of-${index}`;
+            priorityLabel.textContent = 'Priority: ';
+            priorityDiv.appendChild(priorityLabel);
+            const priority = doc.createElement('input');
+            priority.classList.add('priority');
+            priority.id = `priority-of-${index}`;
+            priority.type = 'number';
+            priority.value = todo.getPriority();
+            priority.min = 1;
+            priority.max = 5;
+            priorityDiv.appendChild(priority);
+            toDoDetailsContainer.appendChild(priorityDiv);
+
             const descriptionDiv = doc.createElement('div');
             descriptionDiv.classList.add('todo-details-description-container');
             const description = doc.createElement('textarea');
             description.classList.add('description');
             description.cols = '15';
             description.rows = '5';
+            description.placeholder = 'Description';
             description.textContent = todo.getDescription();
             descriptionDiv.appendChild(description);
             toDoDetailsContainer.appendChild(descriptionDiv);
@@ -134,6 +153,7 @@ export default function projectDisplay(doc, container, projectListObject){
             notes.classList.add('notes');
             notes.cols = '15';
             notes.rows = '10';
+            notes.placeholder = 'Notes';
             notes.textContent = todo.getNotes();
             notesDiv.appendChild(notes);
             toDoDetailsContainer.appendChild(notesDiv);
@@ -221,6 +241,8 @@ export default function projectDisplay(doc, container, projectListObject){
         toDoDate.classList.add('toDo-date-pv');
         toDoDate.textContent = format(project.getToDoList()[i].getDueDate(), 'yyyy/MM/dd');
         checkboxContainer.appendChild(toDoDate);
+
+        checkboxContainer.classList.add(`priority-${project.getToDoList()[i].getPriority()}`);
 
         mS.appendChild(checkboxContainer);
     }

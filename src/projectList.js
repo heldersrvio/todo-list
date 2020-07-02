@@ -1,6 +1,6 @@
 import toDo from './todo';
 import createProject from './project';
-import { parse } from 'date-fns';
+import { isSameDay, isAfter, parse } from 'date-fns';
 
 export default function createProjectList(){
     const pLFromLocalStorage = JSON.parse(localStorage.getItem('projectList'));
@@ -12,7 +12,9 @@ export default function createProjectList(){
             let todosArray = [];
             for (let j = 0; j < todos.length; j++){
                 const todo = toDo(todos[j].Otitle, todos[j].Odescription, parse(todos[j].OdueDate, 'yyyy/MM/dd', new Date()), todos[j].Opriority, todos[j].Onotes, todos[j].Ochecklist, todos[j].OchecklistDoneStatus);
-                todosArray.push(todo);
+                if (isAfter(todo.getDueDate(), new Date()) || isSameDay(todo.getDueDate(), new Date())){
+                    todosArray.push(todo);
+                }
             }
             const project = createProject(pLFromLocalStorage[i].Otitle, todosArray, pLFromLocalStorage[i].OtoDoDoneStatus);
             projectList.push(project);
