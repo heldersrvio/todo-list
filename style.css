@@ -1,0 +1,100 @@
+html{
+    height: 100%;
+    width: 100%;
+}
+
+body{
+    min-height: 100%;
+    width: 100%;
+    font-family: 'Roboto Slab', serif;
+}
+
+#main-container{
+    position: absolute;
+    min-height: 100%;
+    width: 100%;
+}
+
+#top-bar{
+    width: 100%;
+    text-align: center;
+    padding: 20px;
+    background-color: rgb(56, 135, 255);
+    color: white;
+}
+
+#top-bar h1{
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 30px;
+}
+
+#top-bar button{
+    background-color: transparent;
+    border-color: transparent;
+    color: white;
+}
+
+#top-bar button:hover{
+    font-size: 110%;
+}
+
+#today-container{
+    position: absolute;
+    left: 94%;
+    top: 20px;
+}
+
+#projects-tab{
+    position: absolute;
+    padding-top: 40px;
+    min-height: 100%;
+    width: 17%;
+    border-right: 1pt solid rgb(177, 177, 177);
+}
+
+.project-elements{
+    border-top: 1pt solid rgb(177, 177, 177);
+}
+
+#projects-tab-title{
+    font-weight: 500;
+    font-size: 20px;
+    padding-bottom: 30px;
+    padding-left: 35px;
+}
+
+.project-pv{
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    padding-left: 35px;
+    margin-top: 0px;
+    font-weight: 400;
+    border-bottom: 1pt solid rgb(177, 177, 177);
+}
+
+.project-pv:hover{
+    background-color: rgb(177, 177, 177);
+    color: white;
+}
+
+.project-pv button{
+    width: 18px;
+    height: 18px;
+    font-size: 13px;
+    text-align: center;
+    padding: 0px;
+    background-color: transparent;
+    color: rgba(255, 0, 0, 0.473);
+    border: 1pt solid transparent;
+    border-radius: 100%;
+}
+
+.project-pv h3:hover{
+    text-shadow: 0px 0px 10px black;
+}
+
+.project-pv button:hover{
+    color: red;
+}
