@@ -1,7 +1,7 @@
 import toDo from "./todo";
-import { format, isValid } from "date-fns";
+import { format, isValid, isEqual, isSameDay } from "date-fns";
 
-export default function projectDisplay(doc, container){
+export default function projectDisplay(doc, container, projectListObject){
 
     function createChecklistItem(todo, title, i, parentDiv){
         const checkitemContainer = doc.createElement('div');
@@ -12,7 +12,6 @@ export default function projectDisplay(doc, container){
         checkbox.type = 'checkbox';
         checkbox.name = `checkitem-${i}`;
         checkbox.id = `checkitem-${i}`;
-        console.log(todo.getCheckListItemDoneStatus(i));
         if (todo.getCheckListItemDoneStatus(i)){
             checkbox.checked = `on`;
         }
@@ -56,11 +55,10 @@ export default function projectDisplay(doc, container){
         todo.setNotes(doc.querySelector('.todo-details-notes-container textarea').value);
         const currentChecklist = todo.getCheckList();
         const newCheckList = Array.from(document.querySelectorAll('.checkitem-container input[type = "text"]')).map(v => v.value);
-        console.log(currentChecklist);
-        console.log(newCheckList);
         for (let i = 0; i < currentChecklist.length; i++){
             todo.changeItemFromCheckList(i, newCheckList[i]);
         }
+        projectListObject.update();
     }
 
     function createToDoDetailsDiv(project, index){
@@ -172,6 +170,7 @@ export default function projectDisplay(doc, container){
             deleteButton.textContent = 'Delete';
             deleteButton.addEventListener('click', e => {
                 project.removeToDo(index);
+                projectListObject.update();
                 clearMainScreen();
                 createProjectDisplay(project);
             });
@@ -187,6 +186,45 @@ export default function projectDisplay(doc, container){
         }
     }
 
+    function createToDo(mS, project, i){
+        const checkboxContainer = doc.createElement('div');
+        checkboxContainer.classList.add('checkbox-container');
+        const checkbox = doc.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.name = `todo-${i}`;
+        checkbox.id = `todo-${i}`;
+        if (project.getToDoDoneStatus(i)){
+            checkbox.checked = 'on';
+        }
+        checkbox.addEventListener('change', e => {
+            const currentCheckbox = doc.querySelector(`#todo-${i}`);
+            const checkboxLabel = doc.querySelector(`#label-for-todo-${i}`);
+            if (currentCheckbox.checked){
+                checkboxLabel.classList.add('checked');
+            }else{
+                checkboxLabel.classList.remove('checked');
+            }
+            project.changeToDoDoneStatus(i);
+            projectListObject.update();
+        });
+        checkboxContainer.appendChild(checkbox);
+        const label = doc.createElement('label');
+        label.for = `todo-${i}`;
+        label.id = `label-for-todo-${i}`;
+        label.textContent = project.getToDoList()[i].getTitle();
+        label.addEventListener('click', e => {
+            createToDoDetailsDiv(project, i);
+        });
+        checkboxContainer.appendChild(label);
+
+        const toDoDate = doc.createElement('p');
+        toDoDate.classList.add('toDo-date-pv');
+        toDoDate.textContent = format(project.getToDoList()[i].getDueDate(), 'yyyy/MM/dd');
+        checkboxContainer.appendChild(toDoDate);
+
+        mS.appendChild(checkboxContainer);
+    }
+
     const clearMainScreen = function(){
         const mainScreen = document.querySelector('#project-display');
         while (mainScreen && mainScreen.firstChild){
@@ -200,45 +238,7 @@ export default function projectDisplay(doc, container){
         const todos = project.getToDoList();
 
         for (let i = 0; i < todos.length; i++){
-            const checkboxContainer = doc.createElement('div');
-            checkboxContainer.classList.add('checkbox-container');
-            const checkbox = doc.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.name = `todo-${i}`;
-            checkbox.id = `todo-${i}`;
-            console.log(project.getToDoDoneStatus(i));
-            if (project.getToDoDoneStatus(i)){
-                checkbox.checked = 'on';
-            }
-            checkbox.addEventListener('change', e => {
-                const currentCheckbox = doc.querySelector(`#todo-${i}`);
-                const checkboxLabel = doc.querySelector(`#label-for-todo-${i}`);
-                console.log(currentCheckbox.name);
-                console.log(checkboxLabel);
-                console.log(doc.querySelector('label').for);
-                if (currentCheckbox.checked){
-                    checkboxLabel.classList.add('checked');
-                }else{
-                    checkboxLabel.classList.remove('checked');
-                }
-                project.changeToDoDoneStatus(i);
-            });
-            checkboxContainer.appendChild(checkbox);
-            const label = doc.createElement('label');
-            label.for = `todo-${i}`;
-            label.id = `label-for-todo-${i}`;
-            label.textContent = todos[i].getTitle();
-            label.addEventListener('click', e => {
-                createToDoDetailsDiv(project, i);
-            });
-            checkboxContainer.appendChild(label);
-
-            const toDoDate = doc.createElement('p');
-            toDoDate.classList.add('toDo-date-pv');
-            toDoDate.textContent = format(todos[i].getDueDate(), 'yyyy/MM/dd');
-            checkboxContainer.appendChild(toDoDate);
-
-            mainScreen.appendChild(checkboxContainer);
+            createToDo(mainScreen, project, i);
         }
 
         const newToDoButton = doc.createElement('button');
@@ -250,6 +250,7 @@ export default function projectDisplay(doc, container){
                 const date = (new Date());
                 const newToDo = toDo("", "", date, 1, "", []);
                 project.addToDo(newToDo);
+                projectListObject.update();
                 createToDoDetailsDiv(project, project.getToDoList().length - 1);
             }else{
                 tD.classList.add('alert');
@@ -263,8 +264,35 @@ export default function projectDisplay(doc, container){
         container.appendChild(mainScreen);
     };
 
+    const todayDisplay = function(){
+        const projectList = projectListObject.getProjectList();
+        const tD = doc.querySelector('.todo-details');
+
+        if (!tD){
+            const mainScreen = doc.querySelector('#project-display') ? doc.querySelector('#project-display') : doc.createElement('div');
+            mainScreen.id = 'project-display';
+            const today = new Date();
+
+            for (let i = 0; i < projectList.length; i++){
+                const todos = projectList[i].getToDoList();
+                for (let j = 0; j < todos.length; j++){
+                    const currentTodo = todos[j];
+                    if (isSameDay(currentTodo.getDueDate(), today)){
+                        createToDo(mainScreen, projectList[i], j);
+                    }
+                }
+            }
+        }else{
+            tD.classList.add('alert');
+            setTimeout(function(){
+                tD.classList.remove('alert');
+            }, 1000);
+        }
+    };
+
     return {
         clearMainScreen,
         createProjectDisplay,
+        todayDisplay,
     };
 };

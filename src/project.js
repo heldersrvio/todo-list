@@ -1,10 +1,10 @@
-export default function project(title, toDoList = []){
+export default function project(title, toDoList = [], toDoListDone = []){
     let _title, _toDoList, _toDoListDone;
 
     const createProject = function(){
         _title = title;
         _toDoList = toDoList;
-        _toDoListDone = _toDoList.map(v => false);
+        _toDoListDone = toDoListDone ? toDoListDone : _toDoList.map(v => false);
     }();
 
     const getTitle = function(){
@@ -37,6 +37,14 @@ export default function project(title, toDoList = []){
         _toDoListDone[index] = !_toDoListDone[index];
     };
 
+    const stringableObject = function(){
+        return {
+            Otitle: getTitle(),
+            OtoDoList: getToDoList().map(v => v.stringableObject()),
+            OtoDoDoneStatus: getToDoList().map((v, i) => getToDoDoneStatus(i)),
+        };
+    };
+
     return {
         getTitle,
         getToDoList,
@@ -45,5 +53,6 @@ export default function project(title, toDoList = []){
         removeToDo,
         getToDoDoneStatus,
         changeToDoDoneStatus,
+        stringableObject,
     };
 };

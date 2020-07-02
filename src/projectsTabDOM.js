@@ -1,7 +1,6 @@
 import project from './project';
 
-export default function createProjectsTab(doc, container, clearMainScreen, exhibitProject){
-    let projectList = [project("Default")];
+export default function createProjectsTab(doc, container, clearMainScreen, exhibitProject, projectList){
 
     function createNewProject(project){
         const projectElement = doc.createElement('div');
@@ -41,10 +40,14 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
             deleteProjectButton.addEventListener('click', e => {
                 const tD = doc.querySelector('.todo-details');
                 if (!tD){
+                    projectList.removeItemFromProjectList(project);
+
                     projectElement.parentNode.removeChild(projectElement);
                     if (projectElement.classList.contains('highlighted')){
                         clearMainScreen();
-                        exhibitProject(projectList[0]);
+                        const defaultProjectDiv = doc.querySelector('.project-pv');
+                        defaultProjectDiv.classList.add('highlighted');
+                        exhibitProject(projectList.getProjectList()[0]);
                     }
                 }else{
                     tD.classList.add('alert');
@@ -72,8 +75,8 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
     const projectElements = doc.createElement('div');
     projectElements.id = 'project-elements';
 
-    for (let i = 0; i < projectList.length; i++){
-        projectElements.appendChild(createNewProject(projectList[i]));
+    for (let i = 0; i < projectList.getProjectList().length; i++){
+        projectElements.appendChild(createNewProject(projectList.getProjectList()[i]));
     }
 
     const newProjectButton = doc.createElement('button');
@@ -92,7 +95,7 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
                     const projectTitleInput = doc.querySelector('#project-title-input');
 
                     const newProject = project(titleInput.value, []);
-                    projectList.push(newProject);
+                    projectList.appendItemToProjectList(newProject);
 
                     projectElementsDiv.insertBefore(createNewProject(newProject), addProjectButton);
                     projectElementsDiv.removeChild(projectTitleInput);

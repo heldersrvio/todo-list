@@ -1,4 +1,6 @@
-export default function toDo(title, description = "", dueDate, priority = 1, notes = "", checkList = []){
+import { format } from 'date-fns';
+
+export default function toDo(title, description = "", dueDate, priority = 1, notes = "", checkList = [], checkListDone = []){
     let _title, _description, _dueDate, _priority, _notes, _checkList, _checkListDone;
 
     const createToDo = function(){
@@ -8,7 +10,7 @@ export default function toDo(title, description = "", dueDate, priority = 1, not
         _priority = priority;
         _notes = notes;
         _checkList = checkList;
-        _checkListDone = _checkList.map(v => false);
+        _checkListDone = checkListDone ? checkListDone : _checkList.map(v => false);
     }();
 
     const getTitle = function(){
@@ -79,6 +81,18 @@ export default function toDo(title, description = "", dueDate, priority = 1, not
         _checkListDone[index] = !_checkListDone[index];
     };
 
+    const stringableObject = function(){
+        return {
+            Otitle: getTitle(),
+            Odescription: getDescription(),
+            OdueDate: format(getDueDate(), 'yyyy/MM/dd'),
+            Opriority: getPriority(),
+            Onotes: getNotes(),
+            Ochecklist: getCheckList(),
+            OchecklistDoneStatus: getCheckList().map((v, i) => getCheckListItemDoneStatus(i)),
+        };
+    };
+
     return {
         getTitle,
         getDescription,
@@ -96,5 +110,6 @@ export default function toDo(title, description = "", dueDate, priority = 1, not
         changeItemFromCheckList,
         getCheckListItemDoneStatus,
         changeCheckListItemDoneStatus,
+        stringableObject,
     };
 };
