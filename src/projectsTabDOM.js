@@ -36,7 +36,7 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
         if (project.getTitle() != "Default"){
             const deleteProjectButton = doc.createElement('button');
             deleteProjectButton.classList.add('delete-project-button');
-            deleteProjectButton.textContent = '-';
+            deleteProjectButton.textContent = '✕';
             deleteProjectButton.addEventListener('click', e => {
                 const tD = doc.querySelector('.todo-details');
                 if (!tD){
@@ -73,7 +73,7 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
     projectsTab.appendChild(projectsTabTitle);
 
     const projectElements = doc.createElement('div');
-    projectElements.id = 'project-elements';
+    projectElements.classList.add('project-elements');
 
     for (let i = 0; i < projectList.getProjectList().length; i++){
         projectElements.appendChild(createNewProject(projectList.getProjectList()[i]));
@@ -90,15 +90,15 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
             titleInput.id = 'project-title-input';
             titleInput.addEventListener('keydown', e => {
                 if (e.key == "Enter"){
-                    const projectElementsDiv = doc.querySelector('#project-elements');
+                    //const projectElementsDiv = doc.querySelector('#project-elements');
                     const addProjectButton = doc.querySelector('#new-project-button');
                     const projectTitleInput = doc.querySelector('#project-title-input');
 
                     const newProject = project(titleInput.value, []);
                     projectList.appendItemToProjectList(newProject);
 
-                    projectElementsDiv.insertBefore(createNewProject(newProject), addProjectButton);
-                    projectElementsDiv.removeChild(projectTitleInput);
+                    projectElements.insertBefore(createNewProject(newProject), addProjectButton);
+                    projectElements.removeChild(projectTitleInput);
                 }
             });
             projectElements.appendChild(titleInput);
