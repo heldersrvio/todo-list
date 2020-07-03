@@ -18,8 +18,10 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
                 const projectElements = Array.from(doc.querySelectorAll('.project-pv'));
                 for (let j = 0; j < projectElements.length; j++){
                     if (j != projectElements.indexOf(projectElement)){
-                        projectElements[j].classList.remove('highlighted');
-                        break;
+                        if (projectElements[j].classList.contains('highlighted')){
+                            projectElements[j].classList.remove('highlighted');
+                            break;
+                        }
                     }
                 }
 
@@ -28,7 +30,7 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
                 tD.classList.add('alert');
                 setTimeout(function(){
                     tD.classList.remove('alert');
-                }, 1000);
+                }, 150);
             }
         });
         projectElement.appendChild(projectElementTitle);
@@ -53,7 +55,7 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
                     tD.classList.add('alert');
                     setTimeout(function(){
                         tD.classList.remove('alert');
-                    }, 1000);
+                    }, 150);
                 }
             });
             projectElement.appendChild(deleteProjectButton);
@@ -79,37 +81,43 @@ export default function createProjectsTab(doc, container, clearMainScreen, exhib
         projectElements.appendChild(createNewProject(projectList.getProjectList()[i]));
     }
 
+    const newProjectContainer = doc.createElement('div');
+    newProjectContainer.id = 'new-project-container';
     const newProjectButton = doc.createElement('button');
     newProjectButton.textContent = '+';
     newProjectButton.id = 'new-project-button';
     newProjectButton.addEventListener('click', e => {
         const tD = doc.querySelector('.todo-details');
-        if (!tD){
+        if (!tD && !doc.querySelector('#project-title-input')){
             const titleInput = doc.createElement('input');
             titleInput.type = 'text';
             titleInput.id = 'project-title-input';
             titleInput.addEventListener('keydown', e => {
                 if (e.key == "Enter"){
                     //const projectElementsDiv = doc.querySelector('#project-elements');
-                    const addProjectButton = doc.querySelector('#new-project-button');
+                    const addProjectContainer = doc.querySelector('#new-project-container');
                     const projectTitleInput = doc.querySelector('#project-title-input');
 
                     const newProject = project(titleInput.value, []);
                     projectList.appendItemToProjectList(newProject);
 
-                    projectElements.insertBefore(createNewProject(newProject), addProjectButton);
-                    projectElements.removeChild(projectTitleInput);
+                    projectElements.insertBefore(createNewProject(newProject), addProjectContainer);
+                    addProjectContainer.removeChild(projectTitleInput);
                 }
             });
-            projectElements.appendChild(titleInput);
-        }else{
+            newProjectContainer.appendChild(titleInput);
+            titleInput.focus();
+        }else if (tD){
             tD.classList.add('alert');
             setTimeout(function(){
                 tD.classList.remove('alert');
-            }, 1000);
+            }, 150);
+        }else{
+            doc.querySelector('#project-title-input').focus();
         }
     });
-    projectElements.appendChild(newProjectButton);
+    newProjectContainer.appendChild(newProjectButton);
+    projectElements.appendChild(newProjectContainer);
 
     projectsTab.appendChild(projectElements);
     container.appendChild(projectsTab);

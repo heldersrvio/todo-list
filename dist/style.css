@@ -74,7 +74,7 @@ body{
     border-bottom: 1pt solid rgb(177, 177, 177);
 }
 
-.project-pv:hover{
+.project-pv:hover, .highlighted{
     background-color: rgb(177, 177, 177);
     color: white;
 }
@@ -96,5 +96,192 @@ body{
 }
 
 .project-pv button:hover{
+    color: red;
+}
+
+#new-project-container{
+    display: flex;
+    padding-top: 5px;
+}
+
+#new-project-container input{
+    border-color: transparent;
+    padding-left: 4px;
+    max-width: 80%;
+}
+
+#new-project-button{
+    width: 25px;
+    height: 25px;
+    font-size: 20px;
+    margin-left: 5px;
+    background-color: transparent;
+    color: rgb(177, 177, 177);
+    padding: 0;
+    text-align: center;
+    border: 1pt solid transparent;
+    border-radius: 100%;
+}
+
+#new-project-button:hover{
+    color: gray;
+    text-shadow: 0px 0px 5px gray;
+}
+
+#project-display{
+    position: absolute;
+    left: 17%;
+    padding-top: 30px;
+    padding-left: 40px;
+}
+
+#new-todo-button{
+    background-color: transparent;
+    border: 1pt solid rgb(56, 135, 255);
+    color: rgb(56, 135, 255);
+    font-family: 'Roboto Slab', serif;
+    font-weight: 300;
+    font-size: 12px;
+    border-radius: 5%;
+    margin-top: 10px;
+}
+
+#new-todo-button:hover{
+    background-color: rgb(56, 135, 255);
+    color: white;
+}
+
+.checkbox-container{
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.checkbox-container input{
+    margin-right: 10px;
+}
+
+.checkbox-container p{
+    margin-left: 20px;
+    color: rgb(196, 196, 196);
+}
+
+.checkbox-container .checked{
+    text-decoration: line-through;
+    color: rgb(196, 196, 196);
+}
+
+.priority-1{
+    color: rgb(2, 194, 207);
+}
+
+.priority-2{
+    color: rgb(2, 207, 94);
+}
+
+.priority-3{
+    color: rgb(207, 204, 2);
+}
+
+.priority-4{
+    color: rgb(231, 124, 24);
+}
+
+.priority-5{
+    color: rgb(207, 2, 2);
+}
+
+.todo-details{
+    border: 1pt solid rgb(56, 135, 255);
+    border-radius: 5px;
+    padding: 15px;
+    font-weight: 200;
+}
+
+.todo-details input, textarea{
+    font-weight: 200;
+    border: 1pt solid rgb(196, 196, 196);
+}
+
+.todo-details-title-and-date{
+    display: flex;
+    margin-bottom: 10px;
+}
+
+.todo-details-date-container{
+    margin-left: 10px;
+    display: flex;
+    border: 1pt solid rgb(196, 196, 196);
+}
+
+.todo-details-date-container input{
+    border-color: transparent;
+    padding: 0;
+}
+
+.year-input{
+    max-width: 60px;
+}
+
+.month-input, .day-input{
+    max-width: 30px;
+}
+
+.todo-details-priority-container{
+    margin-bottom: 10px;
+}
+
+.todo-details-description-container, .todo-details-notes-container{
+    margin-bottom: 10px;
+}
+
+.alert{
+    border-color: red;
+}
+
+.todo-details-bottom-buttons{
+    margin-top: 20px;
+}
+
+.todo-details-bottom-buttons button, #new-checkitem-button{
+    margin-right: 10px;
+    background-color: white;
+    color: rgb(177, 177, 177);
+    border: 1pt solid rgb(177, 177, 177);
+    border-radius: 5px;
+    font-family: 'Roboto Slab', serif;
+    font-weight: 200;
+    font-size: 13px;
+}
+
+.todo-details-bottom-buttons button:hover, #new-checkitem-button:hover{
+    color: white;
+    background-color: rgb(177, 177, 177);
+    border-color: transparent;
+}
+
+#new-checkitem-button{
+    border-radius: 20px;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+}
+
+.checkitem-container{
+    margin-bottom: 10px;
+}
+
+.checkitem-container input[type= checkbox]{
+    margin-right: 5px;
+}
+
+.checkitem-delete-button{
+    margin-left: 5px;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    color: rgba(255, 0, 0, 0.473);
+}
+
+.checkitem-delete-button:hover{
     color: red;
 }

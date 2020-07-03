@@ -34,7 +34,7 @@ export default function projectDisplay(doc, container, projectListObject){
 
         const deleteButton = doc.createElement('button');
         deleteButton.classList.add('checkitem-delete-button');
-        deleteButton.textContent = '-';
+        deleteButton.textContent = '✕';
         deleteButton.addEventListener('click', e => {
             const itemToRemoveDiv = doc.querySelector(`#${checkitemContainer.id}`);
 
@@ -68,6 +68,7 @@ export default function projectDisplay(doc, container, projectListObject){
         if (!tD){
             const todo = project.getToDoList()[index];
             const mainScreen = doc.querySelector('#project-display');
+            const newToDoButton = doc.querySelector('#new-todo-button');
 
             const toDoDetailsContainer = doc.createElement('div');
             toDoDetailsContainer.classList.add('todo-details');
@@ -79,6 +80,7 @@ export default function projectDisplay(doc, container, projectListObject){
             titleDiv.classList.add('todo-details-title-container');
             const title = doc.createElement('input');
             title.type = 'text';
+            title.placeholder = 'Title';
             title.value = todo.getTitle();
             titleDiv.appendChild(title);
             titleAndDateDiv.appendChild(titleDiv);
@@ -92,9 +94,6 @@ export default function projectDisplay(doc, container, projectListObject){
             dateYear.min = (new Date()).getFullYear();
             dateYear.max = dateYear.min + 10;
             dateDiv.appendChild(dateYear);
-            let spcb = doc.createElement('p');
-            spcb.textContent = '\\';
-            dateDiv.appendChild(spcb);
             const dateMonth = doc.createElement('input');
             dateMonth.classList.add('month-input');
             dateMonth.type = 'number';
@@ -102,9 +101,6 @@ export default function projectDisplay(doc, container, projectListObject){
             dateMonth.min = 1;
             dateMonth.max = 12;
             dateDiv.appendChild(dateMonth);
-            spcb = doc.createElement('p');
-            spcb.textContent = '\\';
-            dateDiv.appendChild(spcb);
             const dateDay = doc.createElement('input');
             dateDay.classList.add('day-input');
             dateDay.type = 'number';
@@ -112,9 +108,6 @@ export default function projectDisplay(doc, container, projectListObject){
             dateDay.min = 1;
             dateDay.max = 31;
             dateDiv.appendChild(dateDay);
-            spcb = doc.createElement('p');
-            spcb.textContent = '\\';
-            dateDiv.appendChild(spcb);
             titleAndDateDiv.appendChild(dateDiv);
 
             toDoDetailsContainer.appendChild(titleAndDateDiv);
@@ -140,7 +133,7 @@ export default function projectDisplay(doc, container, projectListObject){
             descriptionDiv.classList.add('todo-details-description-container');
             const description = doc.createElement('textarea');
             description.classList.add('description');
-            description.cols = '15';
+            description.cols = '45';
             description.rows = '5';
             description.placeholder = 'Description';
             description.textContent = todo.getDescription();
@@ -151,7 +144,7 @@ export default function projectDisplay(doc, container, projectListObject){
             notesDiv.classList.add('todo-details-notes-container');
             const notes = doc.createElement('textarea');
             notes.classList.add('notes');
-            notes.cols = '15';
+            notes.cols = '45';
             notes.rows = '10';
             notes.placeholder = 'Notes';
             notes.textContent = todo.getNotes();
@@ -180,9 +173,11 @@ export default function projectDisplay(doc, container, projectListObject){
             saveButton.id = 'save-button';
             saveButton.textContent = 'Save';
             saveButton.addEventListener('click', e => {
-                save(todo);
-                clearMainScreen();
-                createProjectDisplay(project);
+                if (title.value){
+                    save(todo);
+                    clearMainScreen();
+                    createProjectDisplay(project);
+                }
             });
             bottomButtons.appendChild(saveButton);
             const deleteButton = doc.createElement('button');
@@ -197,12 +192,12 @@ export default function projectDisplay(doc, container, projectListObject){
             bottomButtons.appendChild(deleteButton);
             toDoDetailsContainer.appendChild(bottomButtons);
 
-            mainScreen.appendChild(toDoDetailsContainer);
+            mainScreen.insertBefore(toDoDetailsContainer, newToDoButton);
         }else{
             tD.classList.add('alert');
             setTimeout(function(){
                 tD.classList.remove('alert');
-            }, 1000);
+            }, 150);
         }
     }
 
@@ -235,6 +230,9 @@ export default function projectDisplay(doc, container, projectListObject){
         label.addEventListener('click', e => {
             createToDoDetailsDiv(project, i);
         });
+        if (project.getToDoDoneStatus(i)){
+            label.classList.add('checked');
+        }
         checkboxContainer.appendChild(label);
 
         const toDoDate = doc.createElement('p');
@@ -265,7 +263,7 @@ export default function projectDisplay(doc, container, projectListObject){
 
         const newToDoButton = doc.createElement('button');
         newToDoButton.id = 'new-todo-button';
-        newToDoButton.textContent = '+';
+        newToDoButton.textContent = 'New Todo';
         newToDoButton.addEventListener('click', e => {
             const tD = doc.querySelector('.todo-details');
             if (!tD){
@@ -278,7 +276,7 @@ export default function projectDisplay(doc, container, projectListObject){
                 tD.classList.add('alert');
                 setTimeout(function(){
                     tD.classList.remove('alert');
-                }, 1000);
+                }, 150);
             }
         });
         mainScreen.appendChild(newToDoButton);
@@ -304,11 +302,20 @@ export default function projectDisplay(doc, container, projectListObject){
                     }
                 }
             }
+
+            const projectElements = Array.from(doc.querySelectorAll('.project-pv'));
+            for (let j = 0; j < projectElements.length; j++){
+                if (projectElements[j].classList.contains('highlighted')){
+                    projectElements[j].classList.remove('highlighted');
+                    break;
+                }
+                
+            }
         }else{
             tD.classList.add('alert');
             setTimeout(function(){
                 tD.classList.remove('alert');
-            }, 1000);
+            }, 150);
         }
     };
 
