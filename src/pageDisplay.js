@@ -1,4 +1,4 @@
-import * as firebase from 'firebase/app';
+import { initializeApp, auth, firestore } from 'firebase/app';
 import projectDisplay from './projectDisplayDOM';
 import createProjectsTab from './projectsTabDOM';
 import createTopBar from './topBarDOM';
@@ -15,9 +15,9 @@ export default function main(){
         projectId: "todo-list-c001f"
     };
     
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.firestore();
-    const provider = new firebase.auth.GoogleAuthProvider();
+    initializeApp(firebaseConfig);
+    const database = firestore();
+    const provider = new auth.GoogleAuthProvider();
 
     const body = document.querySelector('body');
     const container = document.createElement('div');
@@ -32,13 +32,12 @@ export default function main(){
     }
 
     const signOut = () => {
-        firebase.auth().signOut();
+        auth().signOut();
         _user = null;
     };
 
     const signIn = () => {
-        console.log('Signing in...')
-        firebase.auth().signInWithRedirect(provider);
+        auth().signInWithRedirect(provider);
     };
 
     const clearMainContainer = () => {
@@ -47,7 +46,7 @@ export default function main(){
         }
     };
 
-    firebase.auth().onAuthStateChanged((user) => {
+    auth().onAuthStateChanged((user) => {
         if (user) {
             _user = user;
             const photoURL = user.providerData[0].photoURL;
@@ -60,7 +59,6 @@ export default function main(){
 
             database.collection('users').doc(id).get().then((doc) => {
                 if (doc.exists) {
-                    console.log('Doc exists');
                     pL = createProjectList(doc.data(), database.collection('users').doc(id));
                     pd = projectDisplay(document, container, pL);
                 }

@@ -25,7 +25,6 @@ export default function createProjectList(userDocumentData = null, userDocument 
     const update = function(){
         localStorage.setItem('projectList', JSON.stringify(projectList.map(v => v.stringableObject())));
         if (userDocument !== null) {
-            console.log('Updating database...');
             userDocument.set({
                 projectList: JSON.stringify(projectList.map(v => v.stringableObject())),
             }, {merge: true});
@@ -34,7 +33,6 @@ export default function createProjectList(userDocumentData = null, userDocument 
 
     let projectList = [createProject("Default")];
     if (userDocumentData !== null && userDocumentData.projectList !== undefined) {
-        console.log('Loading from database...');
         storedPL = JSON.parse(userDocumentData.projectList);
         loadProjectList();
         update();
