@@ -2,30 +2,47 @@ import toDo from './todo';
 import createProject from './project';
 import { isSameDay, isAfter, parse } from 'date-fns';
 
-export default function createProjectList(){
-    const pLFromLocalStorage = JSON.parse(localStorage.getItem('projectList'));
-    let projectList = [createProject("Default")];
-    if (pLFromLocalStorage){
-        projectList = [];
-        for (let i = 0; i < pLFromLocalStorage.length; i++){
-            const todos = pLFromLocalStorage[i].OtoDoList;
-            let todosArray = [];
-            for (let j = 0; j < todos.length; j++){
-                const todo = toDo(todos[j].Otitle, todos[j].Odescription, parse(todos[j].OdueDate, 'yyyy/MM/dd', new Date()), todos[j].Opriority, todos[j].Onotes, todos[j].Ochecklist, todos[j].OchecklistDoneStatus);
-                if (isAfter(todo.getDueDate(), new Date()) || isSameDay(todo.getDueDate(), new Date())){
-                    todosArray.push(todo);
+export default function createProjectList(userDocumentData = null, userDocument = null){
+    let storedPL = null;
+    const loadProjectList = function() {
+        if (storedPL) {
+            projectList = [];
+            for (let i = 0; i < storedPL.length; i++){
+                const todos = storedPL[i].OtoDoList;
+                let todosArray = [];
+                for (let j = 0; j < todos.length; j++){
+                    const todo = toDo(todos[j].Otitle, todos[j].Odescription, parse(todos[j].OdueDate, 'yyyy/MM/dd', new Date()), todos[j].Opriority, todos[j].Onotes, todos[j].Ochecklist, todos[j].OchecklistDoneStatus);
+                    if (isAfter(todo.getDueDate(), new Date()) || isSameDay(todo.getDueDate(), new Date())){
+                        todosArray.push(todo);
+                    }
                 }
+                const project = createProject(storedPL[i].Otitle, todosArray, storedPL[i].OtoDoDoneStatus);
+                projectList.push(project);
             }
-            const project = createProject(pLFromLocalStorage[i].Otitle, todosArray, pLFromLocalStorage[i].OtoDoDoneStatus);
-            projectList.push(project);
         }
     }
 
     const update = function(){
         localStorage.setItem('projectList', JSON.stringify(projectList.map(v => v.stringableObject())));
+        if (userDocument !== null) {
+            console.log('Updating database...');
+            userDocument.set({
+                projectList: JSON.stringify(projectList.map(v => v.stringableObject())),
+            }, {merge: true});
+        }
     }
 
-    update();
+    let projectList = [createProject("Default")];
+    if (userDocumentData !== null && userDocumentData.projectList !== undefined) {
+        console.log('Loading from database...');
+        storedPL = JSON.parse(userDocumentData.projectList);
+        loadProjectList();
+        update();
+    } else {
+        storedPL = JSON.parse(localStorage.getItem('projectList'));
+        loadProjectList();
+        update();
+    }
 
     const getProjectList = function(project){
         return projectList;

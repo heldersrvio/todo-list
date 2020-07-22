@@ -1,4 +1,4 @@
-export default function createTopBar(doc, container, clearMainScreen, exhibitTodayProjects, signIn){
+export default function createTopBar(doc, container, clearMainScreen, exhibitTodayProjects, signIn, signedIn = false, imgSrc = null){
     const topBar = doc.createElement('div');
     topBar.id = 'top-bar';
     
@@ -25,7 +25,14 @@ export default function createTopBar(doc, container, clearMainScreen, exhibitTod
     signInButtonDiv.id = 'signIn-container';
     const signInButton = doc.createElement('button');
     signInButton.id = 'signIn-button';
-    signInButton.textContent = 'Sign in with Google';
+    if (!signedIn) {
+        signInButton.textContent = 'Sign in with Google';
+    } else {
+        signInButton.textContent = 'Sign out';
+        const image = document.createElement('img');
+        image.src = imgSrc;
+        signInButtonDiv.appendChild(image);
+    }
     signInButton.addEventListener('click', e => {
         signIn();
     });
