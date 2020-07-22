@@ -1,3 +1,6 @@
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firestore';
 import toDo from "./todo";
 import { format, isValid, isAfter, isSameDay } from "date-fns";
 
