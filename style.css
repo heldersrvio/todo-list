@@ -23,6 +23,13 @@ body{
     color: white;
 }
 
+#top-bar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
 #top-bar h1{
     font-weight: 800;
     text-transform: uppercase;
@@ -39,10 +46,16 @@ body{
     font-size: 110%;
 }
 
-#today-container{
+#today-container {
     position: absolute;
     left: 94%;
     top: 20px;
+}
+
+#signIn-container {
+    position: absolute;
+    top: 20px;
+    left: 2%;
 }
 
 #projects-tab{
